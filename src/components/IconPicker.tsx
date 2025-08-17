@@ -21,17 +21,18 @@ export function IconPicker({ currentIcon, onIconChange, onClose }: IconPickerPro
           <h3>Choose Icon</h3>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
-        
-        <div className="icon-grid">
-          {AVAILABLE_ICONS.map(icon => (
-            <button
-              key={icon}
-              className={`icon-option ${currentIcon === icon ? 'selected' : ''}`}
-              onClick={() => onIconChange(icon)}
-            >
-              {icon}
-            </button>
-          ))}
+        <div style={{ overflowY: 'auto', maxHeight: '300px' }}>
+          <div className="icon-grid">
+            {AVAILABLE_ICONS.map(icon => (
+              <button
+                key={icon}
+                className={`icon-option ${currentIcon === icon ? 'selected' : ''}`}
+                onClick={() => onIconChange(icon)}
+              >
+                {icon}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

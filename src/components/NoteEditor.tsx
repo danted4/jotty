@@ -20,7 +20,7 @@ export function NoteEditor({ note, onBack, isNewNote = false }: NoteEditorProps)
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showIconPicker, setShowIconPicker] = useState(false)
   const [hasBeenSaved, setHasBeenSaved] = useState(!isNewNote)
-  const [isPreviewMode, setIsPreviewMode] = useState(false)
+  const [isPreviewMode, setIsPreviewMode] = useState(isNewNote ? false : true)
 
   useEffect(() => {
     if (note) {
@@ -77,16 +77,14 @@ export function NoteEditor({ note, onBack, isNewNote = false }: NoteEditorProps)
     
     return parts.map((part, index) => {
       const codeBlockMatch = part.match(/\[CODE_BLOCK:(\w+)\]\n([\s\S]*?)\n\[\/CODE_BLOCK\]/)
-      
       if (codeBlockMatch) {
         const [, language, code] = codeBlockMatch
         return (
           <CodeBlock
-            key={index}
             language={language}
             code={code}
-            onLanguageChange={(newLang) => {
-              // Update raw content by finding and replacing the code block
+            readOnly={isPreviewMode}
+            onLanguageChange={isPreviewMode ? undefined : (newLang) => {
               const newContent = content.replace(
                 new RegExp(`\`\`\`${language}\\s*\\n?([\\s\\S]*?)\\n?\\s*\`\`\``, 'g'),
                 `\`\`\`${newLang}\n$1\n\`\`\``
@@ -94,8 +92,7 @@ export function NoteEditor({ note, onBack, isNewNote = false }: NoteEditorProps)
               setContent(newContent)
               debouncedSave({ title, content: newContent })
             }}
-            onCodeChange={(newCode) => {
-              // Update raw content by finding and replacing the code block
+            onCodeChange={isPreviewMode ? undefined : (newCode) => {
               const newContent = content.replace(
                 new RegExp(`\`\`\`${language}\\s*\\n?[\\s\\S]*?\\n?\\s*\`\`\``, 'g'),
                 `\`\`\`${language}\n${newCode}\n\`\`\``
@@ -106,7 +103,6 @@ export function NoteEditor({ note, onBack, isNewNote = false }: NoteEditorProps)
           />
         )
       }
-      
       return part ? (
         <div key={index} className="text-content">
           {part.split('\n').map((line, lineIndex) => (

@@ -37,16 +37,18 @@ export function ColorPicker({ currentColor, onColorChange, onClose }: ColorPicke
         
         <div className="preset-colors">
           <h4>Preset Colors</h4>
-          <div className="color-grid">
-            {PRESET_COLORS.map(color => (
-              <button
-                key={color}
-                className={`color-swatch ${currentColor === color ? 'selected' : ''}`}
-                style={{ backgroundColor: color }}
-                onClick={() => handlePresetClick(color)}
-                title={color}
-              />
-            ))}
+          <div style={{ overflowY: 'auto', maxHeight: '300px' }}>
+            <div className="color-grid">
+              {PRESET_COLORS.map(color => (
+                <button
+                  key={color}
+                  className={`color-swatch ${currentColor === color ? 'selected' : ''}`}
+                  style={{ backgroundColor: color }}
+                  onClick={() => handlePresetClick(color)}
+                  title={color}
+                />
+              ))}
+            </div>
           </div>
         </div>
         
