@@ -69,7 +69,7 @@ export function CodeBlock({
           value={language}
           onChange={(e) => onLanguageChange?.((e.target as HTMLSelectElement).value)}
           className="language-selector"
-          disabled={readOnly}
+          disabled={!onLanguageChange}
         >
           {SUPPORTED_LANGUAGES.map(lang => (
             <option key={lang.value} value={lang.value}>

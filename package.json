@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "git:autopush": "git diff --quiet || (git add . && git commit -m 'bot: pushing changes onto git' && git push)"
   },
   "repository": {
     "type": "git",

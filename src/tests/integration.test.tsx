@@ -58,7 +58,7 @@ describe('Notes App Integration Tests', () => {
     // Test note deletion
     window.confirm = vi.fn(() => true)
     const deleteButtons = screen.getAllByTitle('Delete note')
-    fireEvent.click(deleteButtons[0]) // Delete the first note
+    fireEvent.click(deleteButtons[1]) // Delete the copy (second in alphabetical order)
 
     await waitFor(() => {
       expect(screen.queryByText('My First Note (Copy)')).not.toBeInTheDocument()

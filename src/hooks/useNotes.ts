@@ -149,7 +149,7 @@ export function useNotes() {
     }
   }
 
-  const sortedNotes = notes.sort((a, b) => b.lastEdited - a.lastEdited)
+  const sortedNotes = notes.sort((a, b) => a.title.localeCompare(b.title))
 
   return {
     notes: sortedNotes,

@@ -56,17 +56,34 @@ export function NoteEditor({ note, onBack, isNewNote = false }: NoteEditorProps)
   }
 
   const handleContentChange = (newContent: string) => {
-    setContent(newContent)
-    debouncedSave({ title, content: newContent })
+    // Process any new triple backticks when content changes
+    const processedContent = processCodeBlocks(newContent)
+    setContent(processedContent)
+    debouncedSave({ title, content: processedContent })
   }
 
   const handleBackClick = () => {
+    // Force save any pending changes before navigating away
+    if (note) {
+      if (isNewNote && !hasBeenSaved) {
+        const hasContentChange = content && content.trim() !== '' && 
+                                 content.trim() !== note.content?.trim()
+        const hasTitleChange = title && title.trim() !== '' && 
+                              title.trim() !== 'Untitled Note'
+        
+        if (hasContentChange || hasTitleChange) {
+          createNote(note.template, { ...note, title, content })
+        }
+      } else if (hasBeenSaved) {
+        updateNote(note.id, { title, content })
+      }
+    }
     onBack()
   }
 
   const processCodeBlocks = (text: string) => {
-    // Detect triple backticks and convert to code block markers
-    // More flexible pattern that handles various newline scenarios
+    // Process triple backticks and convert to code block markers
+    // This will work even if there are existing markers in the text
     return text.replace(/```(\w*)\s*\n?([\s\S]*?)\n?\s*```/g, (match, lang, code) => {
       return `\n[CODE_BLOCK:${lang || 'javascript'}]\n${code.trim()}\n[/CODE_BLOCK]\n`
     })
@@ -78,25 +95,22 @@ export function NoteEditor({ note, onBack, isNewNote = false }: NoteEditorProps)
     return parts.map((part, index) => {
       const codeBlockMatch = part.match(/\[CODE_BLOCK:(\w+)\]\n([\s\S]*?)\n\[\/CODE_BLOCK\]/)
       if (codeBlockMatch) {
-        const [, language, code] = codeBlockMatch
+        const [fullMatch, language, code] = codeBlockMatch
         return (
           <CodeBlock
+            key={`${index}-${language}-${code.slice(0, 10)}`}
             language={language}
             code={code}
             readOnly={isPreviewMode}
-            onLanguageChange={isPreviewMode ? undefined : (newLang) => {
-              const newContent = content.replace(
-                new RegExp(`\`\`\`${language}\\s*\\n?([\\s\\S]*?)\\n?\\s*\`\`\``, 'g'),
-                `\`\`\`${newLang}\n$1\n\`\`\``
-              )
+            onLanguageChange={(newLang) => {
+              // Replace only this specific code block by targeting the exact match
+              const newContent = content.replace(fullMatch, `[CODE_BLOCK:${newLang}]\n${code}\n[/CODE_BLOCK]`)
               setContent(newContent)
               debouncedSave({ title, content: newContent })
             }}
             onCodeChange={isPreviewMode ? undefined : (newCode) => {
-              const newContent = content.replace(
-                new RegExp(`\`\`\`${language}\\s*\\n?[\\s\\S]*?\\n?\\s*\`\`\``, 'g'),
-                `\`\`\`${language}\n${newCode}\n\`\`\``
-              )
+              // Replace only this specific code block by targeting the exact match
+              const newContent = content.replace(fullMatch, `[CODE_BLOCK:${language}]\n${newCode}\n[/CODE_BLOCK]`)
               setContent(newContent)
               debouncedSave({ title, content: newContent })
             }}
@@ -205,7 +219,7 @@ export function NoteEditor({ note, onBack, isNewNote = false }: NoteEditorProps)
         <div className="note-content-container">
           {isPreviewMode ? (
             <div className="note-content-rendered">
-              {renderContent(processCodeBlocks(content))}
+              {renderContent(content)}
             </div>
           ) : (
             <textarea
