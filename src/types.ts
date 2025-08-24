@@ -9,7 +9,7 @@ export interface Note {
   image?: string;
 }
 
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark' | 'system';
 
 export interface CodeBlock {
   id: string;

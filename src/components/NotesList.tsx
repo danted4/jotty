@@ -92,9 +92,9 @@ export function NotesList({ onNoteSelect, onCreateNote }: NotesListProps) {
           <button 
             className="theme-toggle"
             onClick={toggleTheme}
-            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            title={`Switch to ${theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'} mode`}
           >
-            {theme === 'light' ? '🌙' : '☀️'}
+            {theme === 'light' ? '🌙' : theme === 'dark' ? '🌓' : '☀️'}
           </button>
         </div>
       </header>

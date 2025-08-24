@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { vi } from 'vitest'
 
 // Mock localStorage with actual storage behavior
 const store: Record<string, string> = {}
@@ -28,3 +29,18 @@ Object.assign(navigator, {
 // Mock window.addEventListener for storage events
 window.addEventListener = vi.fn()
 window.removeEventListener = vi.fn()
+
+// Mock matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+})
